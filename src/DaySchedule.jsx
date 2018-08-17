@@ -9,7 +9,7 @@ export default class DaySchedule extends Component {
     todaysEvents: [],
   };
 
-  componentDidMount() {
+  componentWillMount() {
     const { todaysDate, eventData, todaysEvents } = this.state;
     this.props.events.forEach((event, idx) => {
       if (moment.utc(event.startTime).format('ddd, MMMM DD') === todaysDate) {
@@ -54,13 +54,13 @@ export default class DaySchedule extends Component {
       const eventState = eventData.map(event => {
           if(event.id === eventID){
               return Object.assign({}, event, {
-                  start_time: edge === 'left' ? time : event.start,
-                  end_time: edge === 'left' ? event.end : time
+                  start_time: edge === 'left' ? time : event.start_time,
+                  end_time: edge === 'left' ? event.end_time : time
               })
           }
           return event;
       });
-
+      
       this.setState({
           eventData: eventState,
       })
