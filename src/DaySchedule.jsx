@@ -1,37 +1,32 @@
 import React, { Component } from 'react';
 import Timeline from 'react-calendar-timeline';
 import moment from 'moment';
-
+ window.id = 0;
 export default class DaySchedule extends Component {
   state = {
     todaysDate: moment(this.props.date).format('ddd, MMMM DD'),
     eventData: [],
-    todaysEvents: [],
+    group: [{id: 1}]
   };
 
   componentWillMount() {
     const { todaysDate, eventData, todaysEvents } = this.state;
     this.props.events.forEach((event, idx) => {
-      if (moment.utc(event.startTime).format('ddd, MMMM DD') === todaysDate) {
-        eventData.push({
-          id: event.id,
-          group: event.id,
-          start_time: moment(event.startTime).valueOf(),
-          end_time: moment(event.endTime).valueOf(),
+      eventData.push({
+          id: window.id++,
+          group: 1,
+          title: event.description,
+          start_time: moment.utc(event.startTime).valueOf(),
+          end_time: moment.utc(event.endTime).valueOf(),
           canMove: true,
           canResize: 'both',
         });
-        todaysEvents.push({
-          id: event.id,
-          title: event.description,
-        });
-      }
     });
   }
 
   handleEventMove = (eventID, dragTime, newEventOrder) => {
-    const { eventData, todaysEvents } = this.state;
-    const eventGroup = todaysEvents[newEventOrder];
+    const { eventData, group } = this.state;
+    const eventGroup = group[newEventOrder];
     const eventState = eventData.map(event => {
       if (event.id === eventID) {
         return Object.assign({}, event, {
@@ -68,12 +63,12 @@ export default class DaySchedule extends Component {
   }
 
   render() {
-    const { eventData, todaysEvents } = this.state;
+    const { eventData, group } = this.state;
     const { handleEventMove, handleEventResize } = this;
     return (
       <div>
         <Timeline
-          groups={todaysEvents}
+          groups={group}
           items={eventData}
           defaultTimeStart={moment(this.props.date)}
           defaultTimeEnd={moment(this.props.date).add(12, 'hour')}
